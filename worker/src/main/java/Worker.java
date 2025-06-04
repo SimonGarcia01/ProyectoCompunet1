@@ -34,14 +34,14 @@ public class Worker {
 		throw new Error("Bat Ice Proxy"); 
 	    }
 
+        System.out.print("Ingrese el nombre del worker: ");
 	    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in)); 
 	    String name = reader.readLine(); 
 
 	    publisher.addSuscriber(name, suscriberPrx);
 	    communicator.waitForShutdown();
-    	}
-	catch(IOException e){
-	    e.printStackTrace();
-	}
+    	} catch(IOException e){
+            e.printStackTrace();
+        }
     }
 }

@@ -20,7 +20,7 @@ public PublisherI(){
 }
  @Override
  public void addSuscriber(String name, SuscriberPrx suscriber, Current current){
- System.out.println("New Suscriber: ");
+ System.out.println("New Suscriber: " + name);
  suscribers.put(name, suscriber); 
 }
  @Override
@@ -28,8 +28,8 @@ public PublisherI(){
  suscribers.remove(name); 
 System.out.println("Suscriber has been removed ");
  }
- public void notifySuscriber(String name, String msg){
- SuscriberPrx suscriber = suscribers.get(name); 
-suscriber.onUpdate(msg);
+ public void notifySuscriber(String name, String min, String max){
+  SuscriberPrx suscriber = suscribers.get(name); 
+  suscriber.onUpdate(min, max);
  }
  }

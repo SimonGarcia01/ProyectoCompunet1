@@ -1,6 +1,6 @@
 module Demo {
   interface Suscriber {
-      void onUpdate(string s);
+      void onUpdate(string min, string max);
   }
   interface Publisher {
       void addSuscriber(string name, Suscriber* o);
