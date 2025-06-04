@@ -1,5 +1,6 @@
-import Demo.SuscriberPrx;
 import com.zeroc.Ice.Current;
+import Demo.SuscriberPrx;
+import Demo.PublisherPrx;
 
 import java.util.HashMap;
 
