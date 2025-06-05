@@ -1,9 +1,11 @@
 module Demo {
   interface Suscriber {
-      void onUpdate(string min, string max);
+      void onUpdate(int min, int max);
   }
+
   interface Publisher {
       void addSuscriber(string name, Suscriber* o);
       void removeSuscriber(string name);
+      void sendNumbers(string name, int min, int max, int nodes);
   }
 }

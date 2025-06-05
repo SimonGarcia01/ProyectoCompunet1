@@ -10,3 +10,4 @@
 rootProject.name = 'NumerosPerfectos'
 include 'master'
 include 'worker'
+include 'client'

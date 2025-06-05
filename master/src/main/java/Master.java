@@ -11,19 +11,12 @@ public class Master {
       adapter.add(publisher, Util.stringToIdentity("Publisher")); 
       adapter.activate();
 
-    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in)); 
-        System.out.println("Escribe el rango de numeros");
-        System.out.println("Escribe el numero minimo");
-        String min = reader.readLine();
-        //input.nextLine(); // Consume newline
-        System.out.println("Escribe el numero maximo");
-        String max = reader.readLine();
-        //input.nextLine(); // Consume newline
+    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         
         System.out.print("Nombre del worker: ");
         String name = reader.readLine();
 
-        publisher.notifySuscriber(name, min, max); 
+        //publisher.notifySuscriber(name, 0, 20);
       cummunicator.waitForShutdown(); 
       reader.close();
      }
