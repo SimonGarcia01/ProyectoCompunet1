@@ -11,17 +11,8 @@ public class Master {
       adapter.add(publisher, Util.stringToIdentity("Publisher")); 
       adapter.activate();
 
-    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        
-        System.out.print("Nombre del worker: ");
-        String name = reader.readLine();
-
-        //publisher.notifySuscriber(name, 0, 20);
       cummunicator.waitForShutdown(); 
-      reader.close();
-     }
-     catch (IOException e) {
-          e.printStackTrace(); 
+
      }
   }
 }

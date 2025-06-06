@@ -1,6 +1,7 @@
 module Demo {
+  sequence<int> IntSeq;
   interface Suscriber {
-      void onUpdate(int min, int max);
+      IntSeq onUpdate(int min, int max);
   }
 
   interface Publisher {

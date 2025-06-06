@@ -57,8 +57,8 @@ public PublisherI(){
  suscribers.remove(name); 
 System.out.println("Suscriber has been removed ");
  }
- public void notifySuscriber(String name, int min, int max){
+ public int[] notifySuscriber(String name, int min, int max){
   SuscriberPrx suscriber = suscribers.get(name); 
-  suscriber.onUpdate(min, max);
+  return suscriber.onUpdate(min, max);
  }
  }

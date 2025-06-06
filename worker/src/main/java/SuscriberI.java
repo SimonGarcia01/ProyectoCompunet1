@@ -1,4 +1,6 @@
 import com.zeroc.Ice.*;
+import java.util.List;
+import java.util.ArrayList;
 /**
       Definición                   Definición 
           en                          en
@@ -11,8 +13,24 @@ import com.zeroc.Ice.*;
 */
 public class SuscriberI implements Demo.Suscriber {
   @Override
-  public void onUpdate(int min, int max, Current current){
-      System.out.println(min);
-      System.out.println(max);
-  }   
+  public int[] onUpdate(int min, int max, Current current){
+      System.out.println("Numero minimo: " + min);
+      System.out.println("Numero maximo: " + max);
+
+      List<Integer> perfectNumbers = new ArrayList<>();
+
+      for(int n = min; n <= max; n++){
+          if(PerfectNumberCalculator.isPerfectNumber(n)){
+              perfectNumbers.add(n);
+          }
+      }
+
+      int[] returnArray = new int[perfectNumbers.size()];
+
+      for(int n = 0; n < perfectNumbers.size(); n++){
+          returnArray[n] = perfectNumbers.get(n);
+      }
+
+      return returnArray;
+  }
 }
