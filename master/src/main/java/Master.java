@@ -11,8 +11,9 @@ public class Master {
       adapter.add(publisher, Util.stringToIdentity("Publisher")); 
       adapter.activate();
 
-      cummunicator.waitForShutdown(); 
+      System.out.println("Esperando al Cliente y los Workers...");
 
+      cummunicator.waitForShutdown();
      }
   }
 }

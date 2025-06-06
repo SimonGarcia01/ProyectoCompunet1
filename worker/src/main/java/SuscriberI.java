@@ -27,8 +27,14 @@ public class SuscriberI implements Demo.Suscriber {
 
       int[] returnArray = new int[perfectNumbers.size()];
 
+
       for(int n = 0; n < perfectNumbers.size(); n++){
           returnArray[n] = perfectNumbers.get(n);
+      }
+
+      System.out.print("Los numeros perfectos en este rango son: ");
+      for(int number: returnArray){
+          System.out.println(" "+number+",");
       }
 
       return returnArray;

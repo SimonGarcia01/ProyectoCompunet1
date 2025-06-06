@@ -66,7 +66,29 @@ public class Client {
 				}
 			}
 
-			publisher.sendNumbers(name, min, max, nodes);
+			long start = System.currentTimeMillis();
+
+			int[] foundPerfectNumbers = publisher.sendNumbers(name, min, max, nodes);
+
+			long end = System.currentTimeMillis();
+
+			System.out.print("Los numeros perfectos son:");
+			for(int n = 0; n < foundPerfectNumbers.length; n++){
+				System.out.print(" " + foundPerfectNumbers[n] + ",");
+			}
+
+			long totalTimeMillis = end - start;
+
+			double totalTimeSeconds = totalTimeMillis / 1000.0;
+
+			double totalTimeMinutes = totalTimeSeconds / 60.0;
+
+			System.out.println("\nTiempo de ejecución:");
+			System.out.printf(" - Milisegundos: %d ms%n", totalTimeMillis);
+			System.out.printf(" - Segundos: %.3f s%n", totalTimeSeconds);
+			System.out.printf(" - Minutos: %.3f min%n", totalTimeMinutes);
+
+			System.out.println("Proceso Terminado (jijiji)");
 
 			communicator.waitForShutdown();
     	} catch(IOException e){

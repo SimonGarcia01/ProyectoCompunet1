@@ -7,6 +7,6 @@ module Demo {
   interface Publisher {
       void addSuscriber(string name, Suscriber* o);
       void removeSuscriber(string name);
-      void sendNumbers(string name, int min, int max, int nodes);
+      IntSeq sendNumbers(string name, int min, int max, int nodes);
   }
 }
