@@ -1,32 +1,38 @@
 /**
-      Definición                   Definición 
-          en                          en
-         Java                         Ice
-          ^                            ^
-          |                            |
-  +-------------+             +----------------+
-  | PublisherI  | ---------|> | Demo.Publisher |
-  +-------------+             +----------------+
-*/
-import com.zeroc.Ice.Current; // definido en Ice para sus métodos 
-import java.util.HashMap;
+ Definición                   Definición
+ en                          en
+ Java                         Ice
+ ^                            ^
+ |                            |
+ +-------------+             +----------------+
+ | PublisherI  | ---------|> | Demo.Publisher |
+ +-------------+             +----------------+
+ */
+import com.zeroc.Ice.Current;
 import Demo.SuscriberPrx;
-import Demo.PublisherPrx;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.concurrent.CompletableFuture;
+import Demo.Publisher;
+import java.util.concurrent.*;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
-public class PublisherI implements Demo.Publisher {
- private HashMap<String, SuscriberPrx> suscribers; 
-public PublisherI(){
- suscribers = new HashMap<>(); 
-}
+public class PublisherI implements Publisher {
+
+ private final Map<String, SuscriberPrx> suscribers = new HashMap<>();
+ private final Queue<Integer> results = new ConcurrentLinkedQueue<>();
+ private final AtomicInteger pendingWorkers = new AtomicInteger(0);
 
  @Override
- public void addSuscriber(String name, SuscriberPrx suscriber, Current current){
- System.out.println("Nuevo suscriber: " + name);
- suscribers.put(name, suscriber);
-}
+ public void addSuscriber(String name, SuscriberPrx suscriber, Current current) {
+  System.out.println("Nuevo suscriber: " + name);
+  suscribers.put(name, suscriber);
+ }
+
+ @Override
+ public void removeSuscriber(String name, Current current) {
+  suscribers.remove(name);
+  System.out.println("Se ha eliminado suscriber: " + name);
+ }
 
  @Override
  public int[] sendNumbers(String name, int min, int max, int nodes, Current current) {
@@ -39,9 +45,11 @@ public PublisherI(){
   int chunk = total / nodes;
   int remainder = total % nodes;
 
-  List<CompletableFuture<int[]>> futures = new ArrayList<>();
-
   int currentMin = min;
+  pendingWorkers.set(nodes);
+  results.clear();  // limpiar resultados anteriores
+
+  List<CompletableFuture<Void>> tasks = new ArrayList<>();
 
   for (int i = 0; i < nodes; i++) {
    int start = currentMin;
@@ -57,39 +65,46 @@ public PublisherI(){
 
    if (suscriber == null) {
     System.out.println("Worker no encontrado: " + workerName);
+    pendingWorkers.decrementAndGet(); // descontamos uno
     continue;
    }
 
    System.out.println("Asignando a " + workerName + " el rango " + start + " a " + end);
 
-   CompletableFuture<int[]> future = suscriber
-           .begin_onUpdate(start, end)
-           .toCompletableFuture();
+   // onUpdateAsync devuelve un CompletableFuture<int[]>
+   CompletableFuture<Void> task = suscriber
+           .onUpdateAsync(start, end)
+           .thenAccept(perfects -> {
+            for (int n : perfects) {
+             results.add(n);
+            }
+            int remaining = pendingWorkers.decrementAndGet();
+            if (remaining == 0) {
+             System.out.println("Todos los resultados han sido reunidos.");
+             System.out.println("Perfectos: " + results);
+            }
+           })
+           .exceptionally(ex -> {
+            System.err.println("Error en worker " + workerName + ": " + ex.getMessage());
+            int remaining = pendingWorkers.decrementAndGet();
+            if (remaining == 0) {
+             System.out.println("Finalizó con errores. Resultados parciales: " + results);
+            }
+            return null;
+           });
 
-   futures.add(future);
+   tasks.add(task);
   }
 
-  List<Integer> result = new ArrayList<>();
-
+  // Bloqueamos solo hasta que todas las tareas terminen (puedes eliminar esto si quieres 100% async)
   try {
-   CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get();
-
-   for (CompletableFuture<int[]> future : futures) {
-    int[] nums = future.get();
-    for (int num : nums) {
-     result.add(num);
-    }
-   }
+   CompletableFuture.allOf(tasks.toArray(new CompletableFuture[0])).get();
   } catch (Exception e) {
    e.printStackTrace();
   }
 
-  int[] finalArray = new int[result.size()];
-  for (int i = 0; i < result.size(); i++) {
-   finalArray[i] = result.get(i);
-  }
-
-  System.out.println("Todos los resultados se han reunido.");
+  // Convertir resultados a int[]
+  int[] finalArray = results.stream().mapToInt(Integer::intValue).toArray();
   return finalArray;
  }
 
@@ -126,14 +141,8 @@ public PublisherI(){
   return finalPerfectNumberArray;
  }
 
-
- @Override
- public void removeSuscriber(String name, Current current){
- suscribers.remove(name); 
-System.out.println("Se ha eliminado suscriber" + name);
- }
  public int[] notifySuscriber(String name, int min, int max){
-  SuscriberPrx suscriber = suscribers.get(name); 
+  SuscriberPrx suscriber = suscribers.get(name);
   return suscriber.onUpdate(min, max);
  }
- }
+}
