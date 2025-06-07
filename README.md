@@ -39,6 +39,7 @@ ice-3.7.6.jar
 
 ### Parámetros que deben ingresarse al cliente
 El cliente recibe los parámetros de:
+
 *Nombre del cliente:*
 - Nombre con el que el cliente conectado quiere ser identificaodo.
   
